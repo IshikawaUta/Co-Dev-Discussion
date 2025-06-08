@@ -1,0 +1,35 @@
+{# templates/new_topic.html #}
+{% extends "base.html" %}
+
+{% block title %}Topik Baru{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Buat Topik Baru</h1>
+<div class="card">
+    <div class="card-body p-4">
+        <form method="POST">
+            {{ form.csrf_token }}
+            <div class="mb-3">
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-control") }}
+                {% if form.title.errors %}
+                    {% for error in form.title.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.content.label(class="form-label") }}
+                {{ form.content(class="form-control", rows="10") }}
+                {% if form.content.errors %}
+                    {% for error in form.content.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('forum.index') }}" class="btn btn-secondary ms-2">Batal</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

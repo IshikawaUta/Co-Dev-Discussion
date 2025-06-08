@@ -1,0 +1,108 @@
+{# templates/topic_detail.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ topic.title }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4 animate__animated animate__fadeInDown">
+    <div class="card-body p-4"> {# Removed card-header, content moved here #}
+        <div class="d-flex justify-content-between align-items-start flex-wrap mb-2"> {# Use flexbox for title and buttons #}
+            <div>
+                <h1 class="card-title mb-0">{{ topic.title }}</h1>
+                <small class="text-muted">Oleh <a href="{{ url_for('forum.user_profile', username=topic.author_username) }}" class="text-primary fw-semibold">{{ topic.author_username }}</a> pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                {% if topic.created_at != topic.updated_at %}
+                    <small class="text-muted">(Terakhir diperbarui: {{ topic.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
+                {% endif %}
+            </div>
+            {% if current_user.is_authenticated and (current_user.get_id() == str(topic.author_id) or current_user.is_admin()) %}
+                <div class="btn-group mt-2 mt-md-0" role="group"> {# Adjust margin for responsiveness #}
+                    <a href="{{ url_for('forum.edit_topic', topic_id=topic._id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <form action="{{ url_for('forum.delete_topic', topic_id=topic._id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus topik ini dan semua balasannya?');">Hapus</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        <hr class="my-3"> {# Separator between meta and content #}
+        <p class="card-text">{{ topic.content }}</p>
+    </div>
+</div>
+
+<h3 class="mb-3 animate__animated animate__fadeIn">Balasan</h3>
+{% if posts %}
+    {% for post in posts %}
+    <div class="card mb-3 animate__animated animate__fadeInUp animate__delay-{{ loop.index0 * 0.1 }}s"> {# Add subtle delay for each post #}
+        <div class="card-body p-4"> {# Removed card-header, content moved here #}
+            <div class="d-flex justify-content-between align-items-start flex-wrap mb-2"> {# Use flexbox for meta and buttons #}
+                <div>
+                    <small class="text-muted">Oleh <a href="{{ url_for('forum.user_profile', username=post.author_username) }}" class="text-primary fw-semibold">{{ post.author_username }}</a> pada {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    {% if post.created_at != post.updated_at %}
+                        <small class="text-muted">(Terakhir diperbarui: {{ post.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
+                    {% endif %}
+                </div>
+                {% if current_user.is_authenticated and (current_user.get_id() == str(post.author_id) or current_user.is_admin()) %}
+                    <div class="btn-group mt-2 mt-md-0" role="group"> {# Adjust margin for responsiveness #}
+                        <a href="{{ url_for('forum.edit_post', post_id=post._id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form action="{{ url_for('forum.delete_post', post_id=post._id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus balasan ini?');">Hapus</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <hr class="my-3"> {# Separator between meta and content #}
+            <p class="card-text">{{ post.content }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    {# Kontrol Paginasi untuk Balasan #}
+    <nav aria-label="Navigasi Halaman" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('forum.topic_detail', topic_id=topic._id, page=page-1) }}" aria-label="Sebelumnya">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('forum.topic_detail', topic_id=topic._id, page=p) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('forum.topic_detail', topic_id=topic._id, page=page+1) }}" aria-label="Berikutnya">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% else %}
+    <div class="alert alert-info animate__animated animate__fadeIn" role="alert">
+        Belum ada balasan. Jadilah yang pertama memposting!
+    </div>
+{% endif %}
+
+<h3 class="mt-4 mb-3 animate__animated animate__fadeIn">Kirim Balasan</h3>
+{% if current_user.is_authenticated %}
+    <div class="card mb-5 animate__animated animate__fadeInUp">
+        <div class="card-body p-4">
+            <form method="POST">
+                {{ form.csrf_token }}
+                <div class="mb-3">
+                    {{ form.content.label(class="form-label") }}
+                    {{ form.content(class="form-control", rows="5") }}
+                    {% if form.content.errors %}
+                        {% for error in form.content.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                {{ form.submit(class="btn btn-success") }}
+            </form>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-warning animate__animated animate__fadeIn" role="alert">
+        Silakan <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-bold text-primary">masuk</a> untuk memposting balasan.
+    </div>
+{% endif %}
+{% endblock %}

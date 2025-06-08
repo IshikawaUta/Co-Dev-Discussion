@@ -1,0 +1,26 @@
+{# templates/edit_post.html #}
+{% extends "base.html" %}
+
+{% block title %}Edit Balasan{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Edit Balasan</h1>
+<div class="card">
+    <div class="card-body p-4">
+        <form method="POST">
+            {{ form.csrf_token }}
+            <div class="mb-3">
+                {{ form.content.label(class="form-label") }}
+                {{ form.content(class="form-control", rows="5") }}
+                {% if form.content.errors %}
+                    {% for error in form.content.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {{ form.submit(class="btn btn-primary", value="Perbarui Balasan") }}
+            <a href="{{ url_for('forum.topic_detail', topic_id=post.topic_id) }}" class="btn btn-secondary ms-2">Batal</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

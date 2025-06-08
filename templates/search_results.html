@@ -1,0 +1,51 @@
+{# templates/search_results.html #}
+{% extends "base.html" %}
+
+{% block title %}Hasil Pencarian{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 animate__animated animate__fadeInDown">Hasil Pencarian untuk "{{ query }}"</h1>
+
+{% if total_results > 0 %}
+    <p class="lead animate__animated animate__fadeIn">
+        <span class="badge bg-primary rounded-pill">{{ total_results }}</span> topik ditemukan.
+    </p>
+    <div class="list-group animate__animated animate__fadeInUp">
+        {% for topic in topics %}
+        <a href="{{ url_for('forum.topic_detail', topic_id=topic._id) }}" class="list-group-item list-group-item-action mb-2">
+            <h5 class="mb-0">{{ topic.title }}</h5> {# Ensure no margin-bottom #}
+            <small class="text-muted">Oleh <a href="{{ url_for('forum.user_profile', username=topic.author_username) }}" class="text-primary fw-semibold">{{ topic.author_username }}</a> pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            {% if topic.created_at != topic.updated_at %}
+                <small class="text-muted">(Terakhir diperbarui: {{ topic.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
+            {% endif %}
+            <p class="mb-0 text-truncate-multiline">{{ topic.content }}</p> {# Removed mt-2, added mb-0 #}
+        </a>
+        {% endfor %}
+    </div>
+
+    {# Kontrol Paginasi #}
+    <nav aria-label="Navigasi Halaman" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('forum.search', q=query, page=page-1) }}" aria-label="Sebelumnya">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('forum.search', q=query, page=p) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('forum.search', q=query, page=page+1) }}" aria-label="Berikutnya">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% else %}
+    <div class="alert alert-info animate__animated animate__fadeIn" role="alert">
+        Tidak ada topik yang cocok dengan kueri pencarian Anda.
+    </div>
+{% endif %}
+{% endblock %}

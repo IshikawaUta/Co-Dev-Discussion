@@ -1,0 +1,37 @@
+{# templates/user_profile.html #}
+{% extends "base.html" %}
+
+{% block title %}Profil Pengguna: {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4 animate__animated animate__fadeInDown">
+    <div class="card-header">
+        <h2>Profil Pengguna: {{ user.username }}</h2>
+    </div>
+    <div class="card-body p-4">
+        <p><strong>Nama Pengguna:</strong> <span class="text-primary fw-semibold">{{ user.username }}</span></p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Peran:</strong> <span class="badge bg-info">{{ user.role.capitalize() }}</span></p>
+    </div>
+</div>
+
+<h3 class="mb-3 animate__animated animate__fadeIn">Topik oleh {{ user.username }}</h3>
+{% if user_topics %}
+    <div class="list-group animate__animated animate__fadeInUp">
+        {% for topic in user_topics %}
+        <a href="{{ url_for('forum.topic_detail', topic_id=topic._id) }}" class="list-group-item list-group-item-action mb-2">
+            <h5 class="mb-0">{{ topic.title }}</h5> {# Ensure no margin-bottom #}
+            <small class="text-muted">Pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            {% if topic.created_at != topic.updated_at %}
+                <small class="text-muted">(Terakhir diperbarui: {{ topic.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
+            {% endif %}
+            <p class="mb-0 text-truncate-multiline">{{ topic.content }}</p> {# Removed mt-2, added mb-0 #}
+        </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info animate__animated animate__fadeIn" role="alert">
+        {{ user.username }} belum membuat topik apa pun.
+    </div>
+{% endif %}
+{% endblock %}

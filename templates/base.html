@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Co-Dev Discussion">
+    <meta property="og:description" content="Bergabunglah dengan komunitas Co-Dev Discussion! Tempat terbaik untuk berbagi ide, bertanya, dan berdiskusi tentang pengembangan web dengan Flask, Python, dan topik teknologi lainnya.">
+    <meta property="og:image" content="https://img.icons8.com/?size=100&id=4PTOIziki4nY&format=png&color=000000">
+    <meta property="og:type" content="website">
+    <meta name="description" content="Co-Dev Discussion. Tempat terbaik untuk berbagi ide, bertanya, dan berdiskusi tentang berbagai topik.">
+    <title>{% block title %}Co-Dev Discussion{% endblock %}</title>
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=4PTOIziki4nY&format=png&color=000000" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        /* Reset dan Box Sizing Global */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #007bff;
+            --primary-light: #66b3ff;
+            --primary-dark: #0056b3;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --body-bg: #f5f7f9; /* Latar belakang yang lebih modern */
+            --text-color: #343a40;
+            --muted-text: #6c757d;
+            --border-color: #e0e0e0; /* Border lebih terang */
+            --card-bg: #ffffff;
+            --card-shadow: 0 8px 20px rgba(0,0,0,0.08); /* Bayangan kartu yang lebih tebal */
+            --hover-shadow: 0 15px 30px rgba(0,0,0,0.15); /* Bayangan hover yang lebih kuat */
+            --border-radius-sm: 0.4rem; /* Diperkecil */
+            --border-radius-md: 0.6rem; /* Diperkecil */
+            --border-radius-lg: 0.8rem; /* Diperkecil */
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif; /* Menggunakan font Quicksand */
+            background-color: var(--body-bg); 
+            color: var(--text-color);
+            padding-top: 75px; /* Padding lebih besar untuk navbar */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6; /* Keterbacaan yang lebih baik */
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700; /* Heading lebih tebal */
+            color: var(--text-color);
+        }
+
+        .container {
+            flex-grow: 1;
+        }
+
+        .navbar {
+            background-color: var(--card-bg); /* Navbar putih */
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06); /* Bayangan lebih halus */
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color); /* Garis bawah halus */
+        }
+        .navbar-brand {
+            font-weight: 700; /* Menggunakan bobot yang tersedia di Quicksand */
+            font-size: 1.65rem;
+            color: var(--primary-color) !important; /* Warna brand */
+        }
+        .nav-link {
+            font-weight: 600; /* Menggunakan bobot yang tersedia di Quicksand */
+            color: var(--muted-text) !important;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            transform: translateY(-2px); /* Efek naik sedikit */
+        }
+        .navbar-nav .nav-item .nav-link.dropdown-toggle {
+            color: var(--text-color) !important; /* Pastikan dropdown toggle gelap */
+        }
+
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--card-shadow);
+            border: none; /* Hapus border default */
+        }
+        .dropdown-item {
+            color: var(--text-color);
+            transition: background-color 0.2s ease, color 0.2s ease;
+            padding: 0.75rem 1.25rem; /* Padding lebih baik */
+        }
+        .dropdown-item:hover {
+            background-color: var(--light-bg);
+            color: var(--primary-color); /* Aksen warna primer saat hover */
+        }
+        .dropdown-divider {
+            border-top-color: var(--border-color);
+        }
+
+        /* Styling Tombol */
+        .btn {
+            border-radius: var(--border-radius-sm);
+            font-weight: 600; /* Menggunakan bobot yang tersedia di Quicksand */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Kurva animasi lebih bagus */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 0.75rem 1.5rem; /* Padding yang lebih nyaman */
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+            transform: translateY(-3px) scale(1.02); /* Lebih banyak efek */
+            box-shadow: 0 8px 18px rgba(0,123,255,0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success-color), #218838);
+            border: none;
+            color: white;
+        }
+        .btn-success:hover {
+            background: linear-gradient(45deg, #218838, var(--success-color));
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(40,167,69,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger-color), #c82333);
+            border: none;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #c82333, var(--danger-color));
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(220,53,69,0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary-color), #5a6268);
+            border: none;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #5a6268, var(--secondary-color));
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(108,117,125,0.4);
+        }
+
+        /* Outline buttons */
+        .btn-outline-light { 
+            border: 1px solid var(--muted-text);
+            color: var(--muted-text);
+            background-color: transparent;
+            box-shadow: none;
+            padding: 0.65rem 1.25rem; /* Padding lebih kecil */
+        }
+        .btn-outline-light:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: transparent;
+            box-shadow: none;
+            padding: 0.65rem 1.25rem; /* Padding lebih kecil */
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+        }
+
+        /* Styling Kartu */
+        .card {
+            border: none;
+            border-radius: var(--border-radius-lg); /* Sudut lebih membulat */
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            background-color: var(--card-bg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transisi untuk hover */
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        .card-header {
+            background-color: var(--light-bg); 
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 1.75rem; /* Padding yang lebih lega */
+            font-weight: 700;
+            color: var(--text-color);
+            border-top-left-radius: var(--border-radius-lg);
+            border-top-right-radius: var(--border-radius-lg);
+        }
+        /* Card header untuk login/register/profil yang menggunakan bg-primary */
+        .card-header.bg-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark)) !important;
+            color: white !important;
+            border-bottom: none; /* Hapus border di sini */
+        }
+
+        /* Flexbox untuk mengatur item header kartu */
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; 
+        }
+        .card-header-flex .btn-group {
+            margin-top: 10px; /* Jarak atas untuk mobile */
+            gap: 10px; /* Jarak antar tombol */
+        }
+        @media (min-width: 768px) {
+            .card-header-flex .btn-group {
+                margin-top: 0;
+            }
+        }
+
+        /* Styling List Group Items (Kartu Topik di Index) */
+        .list-group-item { 
+            border-radius: var(--border-radius-md);
+            margin-bottom: 1rem; /* Jarak antar item */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: var(--card-bg);
+            padding: 1.25rem 1.5rem; /* Padding yang nyaman */
+        }
+        .list-group-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        /* Styling Formulir */
+        .form-control {
+            border-radius: var(--border-radius-sm); /* Diperkecil */
+            padding: 0.6rem 0.9rem; /* Padding lebih kecil */
+            font-size: 0.9rem; /* Ukuran font lebih kecil */
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.2); /* Bayangan focus lebih kecil */
+            outline: none; /* Hapus outline default */
+        }
+        /* Styling untuk form-control-lg yang digunakan di login/register */
+        .form-control-lg {
+            padding: 0.7rem 1rem; /* Padding lebih kecil dari sebelumnya */
+            font-size: 1rem; /* Ukuran font lebih kecil dari sebelumnya */
+            border-radius: var(--border-radius-sm); /* Konsisten dengan sm */
+        }
+        
+        /* Styling Pesan Flash */
+        .alert {
+            border-radius: var(--border-radius-md);
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem; /* Jarak bawah */
+        }
+
+        /* Styling Paginasi */
+        .pagination .page-item .page-link {
+            border-radius: var(--border-radius-sm);
+            margin: 0 0.3rem; /* Jarak antar nomor halaman */
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            padding: 0.6rem 1rem;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+            font-weight: 600;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: var(--primary-light);
+            color: white;
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pagination .page-item.disabled .page-link {
+            box-shadow: none;
+            transform: none;
+            background-color: var(--light-bg);
+            color: var(--muted-text);
+            cursor: not-allowed;
+        }
+
+        /* Styling untuk pesan kesalahan WTForms */
+        .text-danger {
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            color: var(--danger-color) !important;
+        }
+
+        /* Warna Teks Kustom */
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        .text-secondary {
+            color: var(--secondary-color) !important;
+        }
+        .text-muted {
+            color: var(--muted-text) !important;
+        }
+        .text-info {
+            color: var(--info-color) !important;
+        }
+        .text-info:hover {
+            text-decoration: underline !important;
+        }
+
+        /* CSS untuk memotong teks multi-baris dengan elipsis */
+        .text-truncate-multiline {
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Batasi hingga 3 baris secara default */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        @media (min-width: 992px) { /* Untuk ukuran desktop */
+            .text-truncate-multiline {
+                -webkit-line-clamp: 4; /* Bisa lebih banyak baris */
+            }
+        }
+        
+        /* Footer Styling */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--muted-text);
+            padding: 1.5rem 0;
+            margin-top: auto; /* Mendorong footer ke bawah */
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid container">
+            <a class="navbar-brand" href="{{ url_for('forum.index') }}">Co-Dev Discussion</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('forum.index') }}">Beranda</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('forum.new_topic') }}">Topik Baru</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <form class="d-flex" action="{{ url_for('forum.search') }}" method="GET">
+                    <input class="form-control me-2" type="search" placeholder="Cari topik..." aria-label="Cari" name="q" value="{{ request.args.get('q', '') }}">
+                    <button class="btn btn-outline-light" type="submit">Cari</button>
+                </form>
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Selamat Datang, {{ current_user.username }}!
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('forum.user_profile', username=current_user.username) }}">Profil Saya</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Keluar</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Masuk</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.register') }}">Daftar</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 mb-5 pb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">&copy; 2024 Co-Dev Discussion. Hak Cipta Dilindungi Undang-Undang.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle (Popper included) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
