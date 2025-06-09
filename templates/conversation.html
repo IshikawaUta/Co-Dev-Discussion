@@ -1,0 +1,114 @@
+{# templates/conversation.html #}
+{% extends "base.html" %}
+
+{% block title %}Chat dengan {{ other_user.username }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 animate__animated animate__fadeInDown text-center text-md-start">Chat dengan: {{ other_user.username }}</h1>
+
+<div class="card mb-4 shadow-lg animate__animated animate__fadeIn mx-auto" style="height: 60vh; max-height: 600px; overflow-y: auto; display: flex; flex-direction: column-reverse; max-width: 900px; background-color: #ffffff;"> {# Batasi lebar chat dan ubah background menjadi putih bersih #}
+    <div class="card-body p-3" id="chat-messages">
+        {# Messages will be populated here via Jinja2 and dynamically via SocketIO #}
+        {% for message in messages %}
+            <div class="d-flex {% if message.sender_id == current_user._id %}justify-content-end{% else %}justify-content-start{% endif %} mb-3">
+                {# Mengubah max-width gelembung pesan menjadi 85% #}
+                <div class="message-bubble {% if message.sender_id == current_user._id %}bg-primary text-white{% else %}bg-light border text-dark{% endif %} p-2 rounded-3 shadow-sm" style="max-width: 85%;">
+                    <small class="fw-bold d-block mb-1">{% if message.sender_id == current_user._id %}Anda{% else %}{{ message.author_username or other_user.username }}{% endif %}</small>
+                    <p class="mb-0">{{ message.content }}</p>
+                    {# Mengubah warna waktu menjadi putih jika gelembung pesan adalah milik pengirim (Anda) #}
+                    <small class="{% if message.sender_id == current_user._id %}text-white{% else %}text-secondary{% endif %} d-block text-end" style="font-size: 0.75em;">{{ message.created_at.strftime('%H:%M') }}</small>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card shadow-lg animate__animated animate__fadeInUp mx-auto" style="max-width: 900px; background-color: #ffffff;"> {# Batasi lebar form dan ubah background menjadi putih bersih #}
+    <div class="card-body p-4">
+        <form method="POST" id="message-form">
+            {{ form.csrf_token }}
+            <div class="mb-3">
+                {# Label hidden for better visual layout but accessible #}
+                {{ form.content.label(class="form-label visually-hidden") }} 
+                {# Menambahkan rounded-pill untuk keseragaman #}
+                {{ form.content(class="form-control rounded-pill", rows="3", placeholder="Ketik pesan Anda di sini...") }}
+                {% if form.content.errors %}
+                    {% for error in form.content.errors %}>
+                        <div class="text-danger mt-1">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {# Menambahkan rounded-pill dan shadow-sm untuk keseragaman tombol #}
+            {{ form.submit(class="btn btn-primary w-100 py-2 rounded-pill shadow-sm") }}
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var socket = io();
+        var chatMessagesContainer = document.getElementById('chat-messages');
+
+        function scrollToBottom() {
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+
+        scrollToBottom();
+
+        socket.on('new_message', function(msg) {
+            var current_user_id = "{{ current_user.get_id() }}";
+            var other_user_id = "{{ other_user._id | string }}";
+
+            var is_for_this_conversation = 
+                (msg.sender_id === current_user_id && msg.receiver_id === other_user_id) ||
+                (msg.sender_id === other_user_id && msg.receiver_id === current_user_id);
+
+            if (is_for_this_conversation) {
+                var is_sender = msg.sender_id === current_user_id;
+                // Sesuaikan warna gelembung pesan agar serasi dengan tema cerah
+                var bubbleClass = is_sender ? 'bg-primary text-white' : 'bg-light border text-dark';
+                var justifyClass = is_sender ? 'justify-content-end' : 'justify-content-start';
+                var senderName = is_sender ? 'Anda' : msg.sender_username;
+                var messageDate = new Date(msg.created_at);
+                var timestamp = messageDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                // Menambahkan kondisi untuk warna waktu pesan
+                var timestampClass = is_sender ? 'text-white' : 'text-secondary';
+
+                var messageHtml = `
+                    <div class="d-flex ${justifyClass} mb-3">
+                        <div class="message-bubble ${bubbleClass} p-2 rounded-3 shadow-sm" style="max-width: 85%;">
+                            <small class="fw-bold d-block mb-1">${senderName}</small>
+                            <p class="mb-0">${msg.content}</p>
+                            <small class="${timestampClass} d-block text-end" style="font-size: 0.75em;">${timestamp}</small>
+                        </div>
+                    </div>
+                `;
+                chatMessagesContainer.insertAdjacentHTML('beforeend', messageHtml);
+                scrollToBottom();
+            }
+        });
+
+        document.getElementById('message-form').addEventListener('submit', function() {
+            setTimeout(function() {
+                document.getElementById('content').value = '';
+                scrollToBottom();
+            }, 100); 
+        });
+    });
+</script>
+<style>
+    .message-bubble {
+        word-wrap: break-word;
+        /* Tambahkan sedikit transisi untuk efek hover jika diinginkan */
+        transition: transform 0.2s ease-in-out;
+    }
+    .message-bubble:hover {
+        transform: translateY(-2px); /* Efek angkat kecil saat hover */
+    }
+</style>
+{% endblock %}

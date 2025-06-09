@@ -14,11 +14,13 @@
         {% for topic in topics %}
         <a href="{{ url_for('forum.topic_detail', topic_id=topic._id) }}" class="list-group-item list-group-item-action mb-2">
             <h5 class="mb-0">{{ topic.title }}</h5> {# Ensure no margin-bottom #}
-            <small class="text-muted">Oleh <a href="{{ url_for('forum.user_profile', username=topic.author_username) }}" class="text-primary fw-semibold">{{ topic.author_username }}</a> pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-            {% if topic.created_at != topic.updated_at %}
+            <small class="text-muted">
+                {% if topic.created_at != topic.updated_at %}
                 <small class="text-muted">(Terakhir diperbarui: {{ topic.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
-            {% endif %}
-            <p class="mb-0 text-truncate-multiline">{{ topic.content }}</p> {# Removed mt-2, added mb-0 #}
+                {% endif %}
+                <p class="mb-0 text-truncate-multiline">{{ topic.content }}</p> {# Removed mt-2, added mb-0 #}
+                <a href="{{ url_for('forum.user_profile', username=topic.author_username) }}" class="text-primary fw-semibold">{{ topic.author_username }}</a> pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}
+            </small>
         </a>
         {% endfor %}
     </div>

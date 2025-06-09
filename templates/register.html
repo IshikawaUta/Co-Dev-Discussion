@@ -7,15 +7,17 @@
 <div class="row justify-content-center animate__animated animate__fadeIn">
     <div class="col-md-7 col-lg-5">
         <div class="card mt-5 mb-5 border-0 shadow-lg">
-            <div class="card-header text-center bg-primary text-white py-4 rounded-top-3">
-                <h2 class="mb-0">Daftar Akun Baru</h2>
+            {# Ubah background header menjadi putih bersih dan teks menjadi biru primer #}
+            <div class="card-header text-center bg-white py-4 rounded-top-3">
+                <h2 class="mb-0 fw-bold text-primary">Daftar Akun Baru</h2>
             </div>
             <div class="card-body p-4">
                 <form method="POST">
                     {{ form.csrf_token }}
                     <div class="mb-3">
                         {{ form.username.label(class="form-label") }}
-                        {{ form.username(class="form-control form-control-lg", placeholder="Masukkan nama pengguna Anda") }}
+                        {# Menambahkan kelas rounded-pill untuk border radius yang sama seperti login #}
+                        {{ form.username(class="form-control rounded-pill", placeholder="Masukkan nama pengguna Anda") }}
                         {% if form.username.errors %}
                             {% for error in form.username.errors %}
                                 <div class="text-danger">{{ error }}</div>
@@ -24,7 +26,8 @@
                     </div>
                     <div class="mb-3">
                         {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control form-control-lg", placeholder="Masukkan alamat email Anda") }}
+                        {# Menambahkan kelas rounded-pill untuk border radius yang sama seperti login #}
+                        {{ form.email(class="form-control rounded-pill", placeholder="Masukkan alamat email Anda") }}
                         {% if form.email.errors %}
                             {% for error in form.email.errors %}
                                 <div class="text-danger">{{ error }}</div>
@@ -33,7 +36,8 @@
                     </div>
                     <div class="mb-3">
                         {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control form-control-lg", placeholder="Buat kata sandi") }}
+                        {# Menambahkan kelas rounded-pill untuk border radius yang sama seperti login #}
+                        {{ form.password(class="form-control rounded-pill", placeholder="Buat kata sandi") }}
                         {% if form.password.errors %}
                             {% for error in form.password.errors %}
                                 <div class="text-danger">{{ error }}</div>
@@ -42,14 +46,16 @@
                     </div>
                     <div class="mb-4">
                         {{ form.confirm_password.label(class="form-label") }}
-                        {{ form.confirm_password(class="form-control form-control-lg", placeholder="Konfirmasi kata sandi Anda") }}
+                        {# Menambahkan kelas rounded-pill untuk border radius yang sama seperti login #}
+                        {{ form.confirm_password(class="form-control rounded-pill", placeholder="Konfirmasi kata sandi Anda") }}
                         {% if form.confirm_password.errors %}
                             {% for error in form.confirm_password.errors %}
                                 <div class="text-danger">{{ error }}</div>
                             {% endfor %}
                         {% endif %}
                     </div>
-                    {{ form.submit(class="btn btn-primary w-100 btn-lg") }}
+                    {# Menambahkan kelas rounded-pill dan shadow-sm untuk tombol submit #}
+                    {{ form.submit(class="btn btn-primary w-100 btn-lg rounded-pill shadow-sm") }}
                 </form>
             </div>
             <div class="card-footer text-center py-3 bg-light border-0 rounded-bottom-3">
