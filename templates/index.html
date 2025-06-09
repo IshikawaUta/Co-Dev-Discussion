@@ -15,7 +15,7 @@
                 <small class="text-muted">(Terakhir diperbarui: {{ topic.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
                 {% endif %}
                 <p class="mb-0 text-truncate-multiline">{{ topic.content }}</p> {# Removed mt-2, added mb-0 #}
-                <a style="margin-left: 1rem;" href="{{ url_for('forum.user_profile', username=topic.author_username) }}" class="text-primary fw-semibold">{{ topic.author_username }}</a> pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}
+                <a style="margin-left: 1rem;" href="{{ url_for('forum.user_profile', username=topic.author_username) }}" class="text-primary fw-semibold"><i class="fas fa-user-circle me-1"></i>{{ topic.author_username }}</a> pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}
             </small>
         </a>
         {% endfor %}
