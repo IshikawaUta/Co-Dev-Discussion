@@ -19,7 +19,7 @@ def init_db():
     global client, db
     if client is None:
         try:
-            client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000) # Timeout 5 detik
+            client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=15000) # Timeout 5 detik
             # The ismaster command is cheap and does not require auth.
             client.admin.command('ismaster') 
             db = client.forum_db # Ganti 'forum_db' dengan nama database yang Anda inginkan di Atlas

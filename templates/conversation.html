@@ -14,7 +14,8 @@
                 {# Mengubah max-width gelembung pesan menjadi 85% #}
                 <div class="message-bubble {% if message.sender_id == current_user._id %}bg-primary text-white{% else %}bg-light border text-dark{% endif %} p-2 rounded-3 shadow-sm" style="max-width: 85%;">
                     <small class="fw-bold d-block mb-1">{% if message.sender_id == current_user._id %}Anda{% else %}{{ message.author_username or other_user.username }}{% endif %}</small>
-                    <p class="mb-0">{{ message.content }}</p>
+                    {# Menambahkan kelas 'message-content' dan 'preserve-whitespace' #}
+                    <p class="mb-0 message-content preserve-whitespace">{{ message.content }}</p>
                     {# Mengubah warna waktu menjadi putih jika gelembung pesan adalah milik pengirim (Anda) #}
                     <small class="{% if message.sender_id == current_user._id %}text-white{% else %}text-secondary{% endif %} d-block text-end" style="font-size: 0.75em;">{{ message.created_at.strftime('%H:%M') }}</small>
                 </div>
@@ -33,7 +34,7 @@
                 {# Menambahkan rounded-pill untuk keseragaman #}
                 {{ form.content(class="form-control rounded-pill", rows="3", placeholder="Ketik pesan Anda di sini...") }}
                 {% if form.content.errors %}
-                    {% for error in form.content.errors %}>
+                    {% for error in form.content.errors %}
                         <div class="text-danger mt-1">{{ error }}</div>
                     {% endfor %}
                 {% endif %}
@@ -53,9 +54,28 @@
         var socket = io();
         var chatMessagesContainer = document.getElementById('chat-messages');
 
+        // Fungsi untuk meng-scroll ke bawah
         function scrollToBottom() {
             chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
         }
+
+        // Fungsi untuk mengubah URL dalam teks menjadi tautan yang dapat diklik
+        function makeLinksClickable(text) {
+            // Regex untuk mendeteksi URL (http/https atau www.)
+            var urlPattern = /(https?:\/\/\S+|www\.\S+\.\S+)/g;
+            return text.replace(urlPattern, function(match) {
+                var href = match;
+                if (!match.startsWith('http://') && !match.startsWith('https://')) {
+                    href = 'http://' + match; // Tambahkan http:// jika tidak ada
+                }
+                return '<a href="' + href + '" target="_blank" rel="noopener noreferrer">' + match + '</a>';
+            });
+        }
+
+        // Terapkan fungsi makeLinksClickable pada pesan yang sudah ada saat DOM dimuat
+        document.querySelectorAll('.message-content').forEach(function(element) {
+            element.innerHTML = makeLinksClickable(element.innerHTML);
+        });
 
         scrollToBottom();
 
@@ -78,12 +98,15 @@
 
                 // Menambahkan kondisi untuk warna waktu pesan
                 var timestampClass = is_sender ? 'text-white' : 'text-secondary';
+                
+                // Proses konten pesan untuk tautan yang dapat diklik
+                var processedContent = makeLinksClickable(msg.content);
 
                 var messageHtml = `
                     <div class="d-flex ${justifyClass} mb-3">
                         <div class="message-bubble ${bubbleClass} p-2 rounded-3 shadow-sm" style="max-width: 85%;">
                             <small class="fw-bold d-block mb-1">${senderName}</small>
-                            <p class="mb-0">${msg.content}</p>
+                            <p class="mb-0 message-content preserve-whitespace">${processedContent}</p>
                             <small class="${timestampClass} d-block text-end" style="font-size: 0.75em;">${timestamp}</small>
                         </div>
                     </div>
@@ -104,11 +127,36 @@
 <style>
     .message-bubble {
         word-wrap: break-word;
-        /* Tambahkan sedikit transisi untuk efek hover jika diinginkan */
         transition: transform 0.2s ease-in-out;
     }
     .message-bubble:hover {
-        transform: translateY(-2px); /* Efek angkat kecil saat hover */
+        transform: translateY(-2px);
+    }
+
+    /* CSS untuk penanganan baris baru */
+    .preserve-whitespace {
+        white-space: pre-wrap;
+    }
+
+    /* Styling untuk tautan di dalam gelembung pesan */
+    .message-bubble a {
+        text-decoration: underline; /* Selalu ada garis bawah untuk tautan agar mudah dikenali */
+        font-weight: bold; /* Teks tautan sedikit lebih tebal untuk menonjol */
+    }
+
+    /* Tautan di gelembung pesan Anda (biru) */
+    .message-bubble.bg-primary a {
+        color: white; /* Warna teks tautan putih */
+    }
+
+    /* Tautan di gelembung pesan pengguna lain (terang) */
+    .message-bubble.bg-light a {
+        color: #007bff; /* Warna biru standar Bootstrap, agar terlihat jelas di latar belakang terang */
+    }
+
+    /* Efek hover hijau untuk semua tautan di gelembung pesan */
+    .message-bubble a:hover {
+        color: rgb(0, 0, 0); /* Warna hijau saat di-hover */
     }
 </style>
 {% endblock %}

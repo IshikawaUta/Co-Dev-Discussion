@@ -24,7 +24,7 @@
             {% endif %}
         </div>
         <hr class="my-3"> {# Separator between meta and content #}
-        <p class="card-text">{{ topic.content }}</p>
+        <p class="card-text preserve-whitespace">{{ topic.content }}</p>
     </div>
 </div>
 
@@ -50,7 +50,7 @@
                 {% endif %}
             </div>
             <hr class="my-3"> {# Separator between meta and content #}
-            <p class="card-text">{{ post.content }}</p>
+            <p class="card-text preserve-whitespace">{{ post.content }}</p>
         </div>
     </div>
     {% endfor %}
@@ -105,4 +105,32 @@
         Silakan <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-bold text-primary">masuk</a> untuk memposting balasan.
     </div>
 {% endif %}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function makeLinksClickable(selector) {
+            document.querySelectorAll(selector).forEach(function(element) {
+                var text = element.innerHTML;
+                // Regex yang sama seperti di Python
+                var urlPattern = /(https?:\/\/\S+)/g;
+                var linkedText = text.replace(urlPattern, '<a href="$&" target="_blank" rel="noopener noreferrer">$&</a>');
+                element.innerHTML = linkedText;
+            });
+        }
+
+        // Terapkan pada konten topik
+        makeLinksClickable('.card-text'); // Untuk topic_detail.html
+        makeLinksClickable('.text-truncate-multiline'); // Untuk index, search_results, user_profile
+
+        // Jika ada elemen lain yang perlu diproses, tambahkan selectornya di sini
+    });
+</script>
+<style>
+    /* Tetap pertahankan ini untuk penanganan baris baru */
+    .preserve-whitespace {
+        white-space: pre-wrap;
+    }
+</style>
 {% endblock %}

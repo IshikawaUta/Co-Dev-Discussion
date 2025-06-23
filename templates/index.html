@@ -14,7 +14,7 @@
                 {% if topic.created_at != topic.updated_at %}
                 <small class="text-muted">(Terakhir diperbarui: {{ topic.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
                 {% endif %}
-                <p class="mb-0 text-truncate-multiline">{{ topic.content }}</p> {# Removed mt-2, added mb-0 #}
+                <p class="mb-0 text-truncate-multiline preserve-whitespace">{{ topic.content }}</p> {# Removed mt-2, added mb-0 #}
                 <a style="margin-left: 1rem;" href="{{ url_for('forum.user_profile', username=topic.author_username) }}" class="text-primary fw-semibold"><i class="fas fa-user-circle me-1"></i>{{ topic.author_username }}</a> pada {{ topic.created_at.strftime('%Y-%m-%d %H:%M') }}
             </small>
         </a>
@@ -46,4 +46,32 @@
         Belum ada topik. Jadilah yang pertama membuat topik!
     </div>
 {% endif %}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function makeLinksClickable(selector) {
+            document.querySelectorAll(selector).forEach(function(element) {
+                var text = element.innerHTML;
+                // Regex yang sama seperti di Python
+                var urlPattern = /(https?:\/\/\S+)/g;
+                var linkedText = text.replace(urlPattern, '<a href="$&" target="_blank" rel="noopener noreferrer">$&</a>');
+                element.innerHTML = linkedText;
+            });
+        }
+
+        // Terapkan pada konten topik
+        makeLinksClickable('.card-text'); // Untuk topic_detail.html
+        makeLinksClickable('.text-truncate-multiline'); // Untuk index, search_results, user_profile
+
+        // Jika ada elemen lain yang perlu diproses, tambahkan selectornya di sini
+    });
+</script>
+<style>
+    /* Tetap pertahankan ini untuk penanganan baris baru */
+    .preserve-whitespace {
+        white-space: pre-wrap;
+    }
+</style>
 {% endblock %}

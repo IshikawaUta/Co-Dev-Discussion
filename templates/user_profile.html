@@ -35,7 +35,7 @@
             {% if topic.created_at != topic.updated_at %}
                 <small class="text-muted d-block">(Terakhir diperbarui: {{ topic.updated_at.strftime('%Y-%m-%d %H:%M') }})</small>
             {% endif %}
-            <p class="mb-0 text-truncate-multiline mt-2">{{ topic.content }}</p>
+            <p class="mb-0 text-truncate-multiline mt-2 preserve-whitespace">{{ topic.content }}</p>
         </a>
         {% endfor %}
     </div>
@@ -44,4 +44,32 @@
         {{ user.username }} belum membuat topik apa pun.
     </div>
 {% endif %}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function makeLinksClickable(selector) {
+            document.querySelectorAll(selector).forEach(function(element) {
+                var text = element.innerHTML;
+                // Regex yang sama seperti di Python
+                var urlPattern = /(https?:\/\/\S+)/g;
+                var linkedText = text.replace(urlPattern, '<a href="$&" target="_blank" rel="noopener noreferrer">$&</a>');
+                element.innerHTML = linkedText;
+            });
+        }
+
+        // Terapkan pada konten topik
+        makeLinksClickable('.card-text'); // Untuk topic_detail.html
+        makeLinksClickable('.text-truncate-multiline'); // Untuk index, search_results, user_profile
+
+        // Jika ada elemen lain yang perlu diproses, tambahkan selectornya di sini
+    });
+</script>
+<style>
+    /* Tetap pertahankan ini untuk penanganan baris baru */
+    .preserve-whitespace {
+        white-space: pre-wrap;
+    }
+</style>
 {% endblock %}
